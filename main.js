@@ -1,66 +1,64 @@
 const URL = "https://teachablemachine.withgoogle.com/models/NDLXa3bgJ/";
 
-let model, webcam, labelContainer, maxPredictions;
+let model, labelContainer, maxPredictions;
 
-const startButton = document.getElementById("start-button");
-startButton.addEventListener("click", init);
+const imageUpload = document.getElementById("image-upload");
+const imagePreview = document.getElementById("image-preview");
 
-async function init() {
-    // Hide the start button and show loading text
-    startButton.style.display = 'none';
-    const loadingText = document.createElement('p');
-    loadingText.innerText = '모델을 불러오는 중입니다...';
-    document.getElementById('controls').appendChild(loadingText);
-
+// Load the model first
+async function loadModel() {
     const modelURL = URL + "model.json";
     const metadataURL = URL + "metadata.json";
+    
+    const status = document.createElement('p');
+    status.innerText = '모델을 불러오는 중입니다...';
+    document.getElementById('controls').appendChild(status);
 
-    // load the model and metadata
     try {
         model = await tmImage.load(modelURL, metadataURL);
         maxPredictions = model.getTotalClasses();
-
-        // Convenience function to setup a webcam
-        const flip = true; // whether to flip the webcam
-        webcam = new tmImage.Webcam(480, 480, flip); // width, height, flip
-        await webcam.setup(); // request access to the webcam
-        await webcam.play();
-        window.requestAnimationFrame(loop);
-
-        // append elements to the DOM
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
-        labelContainer = document.getElementById("label-container");
-        for (let i = 0; i < maxPredictions; i++) { // and class labels
-            const resultBar = document.createElement("div");
-            resultBar.classList.add("result-bar");
-            resultBar.innerHTML = `
-                <div class="result-label"></div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar"></div>
-                </div>
-            `;
-            labelContainer.appendChild(resultBar);
-        }
-        
-        // Remove loading text
-        loadingText.style.display = 'none';
-
+        status.innerText = '판별할 이미지를 선택해주세요.';
     } catch (e) {
         console.error(e);
-        loadingText.innerText = '오류가 발생했습니다. 카메라 권한을 확인해주세요.';
+        status.innerText = '모델 로딩 중 오류가 발생했습니다.';
+    }
+    
+    // Setup the label container
+    labelContainer = document.getElementById("label-container");
+    for (let i = 0; i < maxPredictions; i++) {
+        const resultBar = document.createElement("div");
+        resultBar.classList.add("result-bar");
+        resultBar.innerHTML = `
+            <div class="result-label"></div>
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+        `;
+        labelContainer.appendChild(resultBar);
     }
 }
 
-async function loop() {
-    webcam.update(); // update the webcam frame
-    await predict();
-    window.requestAnimationFrame(loop);
-}
+// Handle file upload
+imageUpload.addEventListener("change", async (event) => {
+    if (event.target.files && event.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = 'block';
+            // Wait for the image to be loaded before predicting
+            imagePreview.onload = () => predict();
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+});
 
-// run the webcam image through the image model
+// Run the prediction
 async function predict() {
-    // predict can take in an image, video or canvas html element
-    const prediction = await model.predict(webcam.canvas);
+    if (!model) {
+        console.error("Model not loaded yet");
+        return;
+    }
+    const prediction = await model.predict(imagePreview);
     for (let i = 0; i < maxPredictions; i++) {
         const classPrediction =
             prediction[i].className + ": " + prediction[i].probability.toFixed(2);
@@ -76,3 +74,6 @@ async function predict() {
         progressBar.innerText = percentage + '%';
     }
 }
+
+// Initialize the application
+loadModel();
