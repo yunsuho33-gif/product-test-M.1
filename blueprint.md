@@ -1,39 +1,39 @@
-# Lotto Number Recommendation Site
+# Animal Face Test Website Blueprint
 
 ## Overview
 
-A simple, visually appealing single-page application that generates and displays random lotto number recommendations. The application will have a clean, modern, and engaging user interface.
+A web application that uses a Teachable Machine image classification model to determine a user's "animal face" type. Users can either use their webcam in real-time or upload an image to get a prediction.
 
-## Project Outline
+## Features
 
-### Style and Design
+- **Real-time Prediction:** Uses a webcam to classify the user's face in real-time.
+- **Image Upload:** Allows users to upload an image file for classification.
+- **Result Display:** Shows the predicted animal face type with a confidence score.
+- **Modern UI:** A clean, responsive, and intuitive user interface.
 
-*   **Theme:** Modern, clean, and fun, with a slightly retro feel.
-*   **Color Palette:** A vibrant color palette will be used for the lotto balls, with a contrasting background.
-    *   Background: A dark, slightly textured background (`#2c3e50`).
-    *   Lotto Balls: A set of bright, distinct colors (e.g., `#e74c3c`, `#3498db`, `#2ecc71`, `#f1c40f`, `#9b59b6`, `#e67e22`).
-    *   Text & Buttons: White text (`#ecf0f1`) for readability and a prominent color for the call-to-action button.
-*   **Typography:** A clean, sans-serif font like 'Montserrat' from Google Fonts.
-*   **Layout:** A centered layout with the title, lotto number display, and the "Generate" button stacked vertically. The layout will be responsive and work well on mobile devices.
-*   **Visual Effects:**
-    *   **Noise Texture:** A subtle noise texture on the background for a premium feel.
-    *   **Shadows:** Soft drop shadows on the lotto balls and the button to create a sense of depth.
-    *   **Animation:** A simple, satisfying animation when the numbers are generated.
+## Design and Style
 
-### Features
+- **Layout:** A centered, single-column layout that is easy to navigate.
+- **Theme:** A light and friendly theme with a clean aesthetic.
+- **Typography:** Clear and readable fonts.
+- **Components:**
+    - A main container for the webcam feed or uploaded image.
+    - A control panel with buttons for starting the webcam or uploading a file.
+    - A results area that dynamically displays the predictions as a list or bar chart.
+- **Responsiveness:** The layout will adapt to different screen sizes for mobile and desktop use.
 
-*   **Number Generation:**
-    *   Generates 6 unique random numbers between 1 and 45.
-    *   The generation is triggered by a user clicking a "Generate Numbers" button.
-*   **Display:**
-    *   The 6 generated numbers are displayed as colored "lotto balls."
-    *   Each ball will clearly show its number.
-*   **Interactivity:**
-    *   A prominent "Generate Numbers" button initiates the number generation.
-    *   The button will have a clear hover and active state.
+## Technical Plan
 
-## Current Plan
-
-*   **HTML (`index.html`):** Set up the basic structure of the page, including a title, a container for the lotto balls, and a button.
-*   **CSS (`style.css`):** Implement the visual design, including the color scheme, layout, typography, and effects.
-*   **JavaScript (`main.js`):** Implement the logic for generating unique random numbers and updating the display.
+1.  **`index.html`**:
+    -   Set up the basic HTML structure.
+    -   Include CDN links for TensorFlow.js and `@teachablemachine/image`.
+    -   Define the main elements: `<h1>`, instructions, `<div>` for the webcam/image, and a `<div>` for the results.
+2.  **`style.css`**:
+    -   Implement the modern design and responsive layout using Flexbox and media queries.
+    -   Style the buttons, result bars, and containers for a polished look.
+3.  **`main.js`**:
+    -   Load the Teachable Machine model from the provided URL (`https://teachablemachine.withgoogle.com/models/NDLXa3bgJ/`).
+    -   Implement the `init()` function to set up the webcam and start the prediction loop.
+    -   Implement the `loop()` function for real-time predictions.
+    -   Create a function to handle image file uploads and run predictions on them.
+    -   Dynamically update the DOM to display the results.
